@@ -1,4 +1,5 @@
 import sys
+import re
 
 class Elevator:
     def __init__(self, start_floor=0):
@@ -25,13 +26,17 @@ def parse_arguments(args):
     start_floor = 0
     floors_to_visit = []
     
-    for arg in args:
-        if arg.startswith("start="):
-            start_floor = int(arg.split("=")[1])
-                
-        elif arg.startswith("floor="):
-                floor_values = arg.split("=")[1].split(",")
-                floors_to_visit = [int(floor) for floor in floor_values if floor.isdigit()]
+    input_text = " ".join(args)
+    
+    start_match = re.search(r'start\s*=\s*(\d+)', input_text)
+    if start_match:
+        start_floor = int(start_match.group(1))
+        
+    floor_match = re.search(r'floor\s*=\s*([\d\s,]+)', input_text)
+    if floor_match:
+        floor_string = floor_match.group(1)
+        floor_values = floor_string.split(",")
+        floors_to_visit = [int(floor.strip()) for floor in floor_values if re.search(r'\d', floor)]
         
     return start_floor, floors_to_visit
 
